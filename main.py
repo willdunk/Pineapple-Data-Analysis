@@ -27,21 +27,16 @@ for edge in listofedges:
 		listofmacssid.append(edge[1])
 	tempdata['links'].append({'source': listofmacssid.index(edge[0]), 'target': listofmacssid.index(edge[1]), 'value': 1}) 
 
-print(listofedges)
-
 # Graph stuff
 
-init_notebook_mode()
+init_notebook_mode(connected = False)
 
 data = tempdata
 
 N=len(data['nodes'])
-print(N)
 
 L=len(data['links'])
 Edges=[(data['links'][k]['source'], data['links'][k]['target']) for k in range(L)]
-print(len(Edges))
-
 
 G=ig.Graph(Edges, directed=False)
 
@@ -51,7 +46,7 @@ for node in data['nodes']:
     labels.append(node['name'])
     group.append(node['group'])
 
-layt=G.layout('kk', dim=3)
+layt=G.layout('kk_3d', dim=3)
 
 Xn=[layt[k][0] for k in range(N)]# x-coordinates of nodes
 Yn=[layt[k][1] for k in range(N)]# y-coordinates
@@ -113,3 +108,65 @@ data=Data([trace1, trace2])
 fig=Figure(data=data, layout=layout)
 
 offline.plot(fig, filename='Pineapple-MAC-SSID.html')
+
+# -------------------------------
+
+# 2D layout
+G=ig.Graph(Edges, directed=False)
+
+layt=G.layout('kk', dim=2)
+Xn=[layt[k][0] for k in range(N)]# x-coordinates of nodes
+Yn=[layt[k][1] for k in range(N)]# y-coordinates
+
+Xe=[]
+Ye=[]
+for e in Edges:
+    Xe+=[layt[e[0]][0],layt[e[1]][0]]# x-coordinates of edge ends
+    Ye+=[layt[e[0]][1],layt[e[1]][1]]
+
+trace1=Scatter(x=Xe,
+               y=Ye,
+               mode='lines',
+               line=Line(color='rgb(125,125,125)', width=1),
+               hoverinfo='none'
+               )
+trace2=Scatter(x=Xn,
+               y=Yn,
+               mode='markers',
+               name='nodes',
+               marker=Marker(symbol='dot',
+                             size=6,
+                             color=group,
+                             colorscale='Viridis',
+                             line=Line(color='rgb(50,50,50)', width=0.5)
+                             ),
+               text=labels,
+               hoverinfo='text'
+               )
+
+axis=dict(showbackground=False,
+          showline=False,
+          zeroline=False,
+          showgrid=False,
+          showticklabels=False,
+          title=''
+          )
+
+layout = Layout(
+         title="2D Network connection requests by MAC address and SSID requested",
+         width=1000,
+         height=1000,
+         showlegend=False,
+         scene=Scene(
+         xaxis=XAxis(axis),
+         yaxis=YAxis(axis),
+        ),
+     margin=Margin(
+        t=100
+    ),
+    hovermode='closest')
+
+data=Data([trace1, trace2])
+fig=Figure(data=data, layout=layout)
+
+offline.plot(fig, filename='2D-Pineapple-MAC-SSID.html')
