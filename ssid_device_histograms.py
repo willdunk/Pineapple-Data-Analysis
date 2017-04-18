@@ -38,7 +38,19 @@ def main():
 
 	print("SSIDs Detected:       {}".format(len(ssid_population)))
 	print("Max Clients Per SSID: {}".format(max(ssid_population)))
-	print("50% Clients Per SSID: {}".format(median(ssid_population)))
+	print("Med Clients Per SSID: {}".format(median(ssid_population)))
+	print("Min Clients Per SSID: {}".format(min(ssid_population)))
+	print("Avg Clients Per SSID: {}".format(average(ssid_population)))
+
+	print("-" * 80)
+	print("STATS WITHOUT 1 CLIENT PER SSID")
+	print("-" * 80)
+
+	ssid_population[:] = [x for x in ssid_population if x != 1]
+
+	print("SSIDs Detected:       {}".format(len(ssid_population)))
+	print("Max Clients Per SSID: {}".format(max(ssid_population)))
+	print("Med Clients Per SSID: {}".format(median(ssid_population)))
 	print("Min Clients Per SSID: {}".format(min(ssid_population)))
 	print("Avg Clients Per SSID: {}".format(average(ssid_population)))
 	return
