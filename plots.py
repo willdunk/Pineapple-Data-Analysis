@@ -6,7 +6,19 @@ from plotly.graph_objs import *
 import igraph as ig
 
 import json
-import urllib2
+try:
+    import urllib.request as urllib2
+except ImportError:
+    import urllib2
+
+import sys
+
+ssidtofind=""
+
+if(len(sys.argv)<=0 or len(sys.argv)>2):
+  	print("No Arguments Provided")
+else:
+	ssidtofind=sys.argv[1]
 
 tempdata = {'nodes':[], 'links':[]}
 listofedges = []
@@ -16,6 +28,8 @@ for line in open('pineap.log'):
 
 listofedges = list(set(listofedges))
 
+listofedges[:] = [x for x in listofedges if x != ""]
+
 listofmacssid = [];
 
 for edge in listofedges:
@@ -23,7 +37,11 @@ for edge in listofedges:
 		tempdata['nodes'].append({'name': edge[0], 'group': 1})
 		listofmacssid.append(edge[0])
 	if(not edge[1] in listofmacssid):
-		tempdata['nodes'].append({'name': edge[1][:-1], 'group': 2})
+		g = 2
+		# print(edge[1][:-1])
+		if(ssidtofind == edge[1][:-1]):
+			g = 3
+		tempdata['nodes'].append({'name': edge[1][:-1], 'group': g})
 		listofmacssid.append(edge[1])
 	tempdata['links'].append({'source': listofmacssid.index(edge[0]), 'target': listofmacssid.index(edge[1]), 'value': 1}) 
 
